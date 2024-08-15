@@ -215,6 +215,8 @@
 
 				function finishGame(interval) {
 					clearInterval(interval);
+					console.log(score);
+					console.log(clicks);
 					const accuracy = clicks > 0 ? ((score / clicks) * 100).toFixed(2) : 0;
 					board.innerHTML = `<h1>Счёт: <span class="primary">${score}</span><br>Точность: ${accuracy}%</h1>`;
 					restart.style.opacity = '1'; // Показать кнопку рестарта
