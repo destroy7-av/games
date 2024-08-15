@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+</head>
+<body>
+	<!-- Стили -->
+	<div id="style">
+		<style>
+			@font-face {
+			  font-family: 'Khula';
+			  font-style: normal;
+			  font-weight: 400;
+			  src: url(https://fonts.gstatic.com/s/khula/v12/OpNCnoEOns3V7GcPrg7shw.woff2) format('woff2');
+			  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09;
+			}
+			@font-face {
+			  font-family: 'Khula';
+			  font-style: normal;
+			  font-weight: 400;
+			  src: url(https://fonts.gstatic.com/s/khula/v12/OpNCnoEOns3V7GcArg7shw.woff2) format('woff2');
+			  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+			}
+			@font-face {
+			  font-family: 'Khula';
+			  font-style: normal;
+			  font-weight: 400;
+			  src: url(https://fonts.gstatic.com/s/khula/v12/OpNCnoEOns3V7GcOrg4.woff2) format('woff2');
+			  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+			}
+			*{
+				box-sizing:border-box;
+			}
+
+
+			body{
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				text-align: center;
+				height: 100vh;
+				color:#ffffff;
+				font-family:'Khula',sans-serif;
+				overflow: hidden;
+				margin: 0;
+				
+			}
+			.screen{
+				display: none;
+				opacity: 0;
+				background: linear-gradient(90deg, #29323c 0%, #485563 100%);
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				height: 100vh;
+				width: 100vw;
+				transition: margin 0.5s ease-out;	
+			}
+			.screen.visible {
+				display: flex;
+				opacity: 1;
+			}
+			.board{
+				position: relative;
+				width: 80%;
+				height: 80%;
+				margin: 20px 0;
+				border-radius: 30px;
+				box-shadow: 0px 0px 40px #000;
+				overflow: hidden;
+				
+				display: flex; 
+				justify-content: center;
+				align-items: center;
+			}
+			.circle{
+				
+				position: absolute;
+				border-radius: 50%;
+				cursor: pointer;
+				
+			}
+			.time-btn{
+				background-color:transparent;
+				border: 4px solid #c0c0c0;
+				color:#fff;
+				cursor: pointer;
+				font-family: inherit;
+				padding: .5rem 1rem;
+			}
+			.time-btn:hover{
+				border:4px solid #ff3800;
+				color: #ff3800;
+			}
+			.time-list{
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				list-style: none;
+				padding: 0;
+			}
+			.time-list li{
+				margin: 20px;
+			}
+			.start{
+				font-size: 1.5rem;
+			}
+			.restart{
+				opacity: 0;
+				display: flex;
+				padding: 20px;
+				font-size: 40px;
+				cursor: pointer;
+			}
+			a{
+				display: flex;
+				color: #fff;
+				text-decoration: none;
+				font-size: 60px;
+				cursor: pointer;
+			}
+			a:hover{
+				color:#ff3800;
+			}
+			.primary{
+				color: #ff3800;
+			}
+			h1{
+				line-height: 1.4;
+				font-size: 4rem;
+			}
+		</style>
+	</div>
+	
+	<!-- Этапы игры -->
+	<div class="screen" id="screen-1">
+        <h1>Тренировка</h1>
+        <a class="start" id="start">Начать</a>
+    </div>
+    <div class="screen" id="screen-2">
+        <h1>Выберите время</h1>
+        <ul class="time-list" id="time-list"></ul>
+    </div>
+    <div class="screen" id="screen-3">
+        <h3>Осталось <span id='time'>00:00</span></h3>
+        <div class="board" id="board"></div>
+        <a class="restart">Попробовать снова</a>
+    </div>
+	
+	<!-- Скрипты-->
+	<div id="game_script_js">
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				const startBtnGame = document.querySelector('#start');
+				const screens = document.querySelectorAll('.screen');
+				const timeList = document.querySelector('#time-list');
+				const timeEl = document.querySelector('#time');
+				const board = document.querySelector('#board');
+				const colors = ['red', 'blue', 'green', 'purple', 'orange'];
+				const times = [10, 20, 30, 40, 50, 60];
+				const restart = document.querySelector('.restart');
+
+				let score = 0;
+				let clicks = 0;
+
+				showScreen(screens[0]);
+
+				startBtnGame.addEventListener('click', () => {
+					showScreen(screens[1]);
+					createTimeButtons();
+				});
+
+				function createTimeButtons() {
+					times.forEach(time => {
+						const li = document.createElement('li');
+						const btn = document.createElement('button');
+
+						btn.classList.add('time-btn');
+						btn.textContent = time;
+						btn.addEventListener('click', () => {
+							startGame(time);
+						});
+
+						li.appendChild(btn);
+						timeList.appendChild(li);
+					});
+				}
+
+				function startGame(time) {
+					score = 0;
+					clicks = 0;
+					let currentTime = time;
+
+					showScreen(screens[2]);
+					setTime(time);
+					createRandomCircle();
+
+					const interval = setInterval(() => {
+						if (currentTime <= 0) {
+							finishGame(interval);
+						} else {
+							currentTime--;
+							setTime(currentTime);
+						}
+					}, 1000);
+				}
+
+				function setTime(value) {
+					timeEl.innerHTML = `00:${value < 10 ? '0' + value : value}`;
+				}
+
+				function finishGame(interval) {
+					clearInterval(interval);
+					const accuracy = clicks > 0 ? ((score / clicks) * 100).toFixed(2) : 0;
+					board.innerHTML = `<h1>Счёт: <span class="primary">${score}</span><br>Точность: ${accuracy}%</h1>`;
+					restart.style.opacity = '1'; // Показать кнопку рестарта
+				}
+
+				function createRandomCircle() {
+					const circle = document.createElement('div');
+					const size = getRandomNumber(10, 60);
+					const { width, height } = board.getBoundingClientRect();
+					const x = getRandomNumber(0, width - size);
+					const y = getRandomNumber(0, height - size);
+
+					circle.classList.add('circle');
+					circle.style.width = `${size}px`;
+					circle.style.height = `${size}px`;
+					circle.style.top = `${y}px`;
+					circle.style.left = `${x}px`;
+					circle.style.background = getRandomColor();
+
+					board.append(circle);
+				}
+
+				function getRandomNumber(min, max) {
+					return Math.round(Math.random() * (max - min) + min);
+				}
+
+				function getRandomColor() {
+					const index = Math.floor(Math.random() * colors.length);
+					return colors[index];
+				}
+
+				// Функция для показа экрана с эффектом затухания
+				function showScreen(screen) {
+					screens.forEach(s => {
+						if (s !== screen) {
+							s.classList.remove('visible');
+							s.style.opacity = '0';
+						}
+					});
+					screen.classList.add('visible');
+					screen.style.opacity = '1';
+				}
+
+				restart.addEventListener('click', () => {
+					// Показать второй экран повторно
+					showScreen(screens[1]);
+					score = 0;
+					clicks = 0;
+					board.innerHTML = '';
+					timeEl.innerHTML = '00:00';
+					restart.style.opacity = '0';
+				});
+
+				board.addEventListener('click', event => {
+					if (event.target.classList.contains('circle')) {
+						score++;
+						clicks++;
+						event.target.remove();
+						createRandomCircle();
+					}
+				});
+			});
+		</script>
+	</div>
+</body>
+</html>
