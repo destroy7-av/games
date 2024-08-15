@@ -271,10 +271,10 @@
 				board.addEventListener('click', event => {
 					if (event.target.classList.contains('circle')) {
 						score++;
-						clicks++;
 						event.target.remove();
 						createRandomCircle();
 					}
+					clicks++;
 				});
 			});
 		</script>
