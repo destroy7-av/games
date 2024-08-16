@@ -215,8 +215,6 @@
 
 				function finishGame(interval) {
 					clearInterval(interval);
-					console.log(score);
-					console.log(clicks);
 					const accuracy = clicks > 0 ? ((score / clicks) * 100).toFixed(2) : 0;
 					board.innerHTML = `<h1>Счёт: <span class="primary">${score}</span><br>Точность: ${accuracy}%</h1>`;
 					restart.style.opacity = '1'; // Показать кнопку рестарта
@@ -248,7 +246,6 @@
 					return colors[index];
 				}
 
-				// Функция для показа экрана с эффектом затухания
 				function showScreen(screen) {
 					screens.forEach(s => {
 						if (s !== screen) {
@@ -261,7 +258,6 @@
 				}
 
 				restart.addEventListener('click', () => {
-					// Показать второй экран повторно
 					showScreen(screens[1]);
 					score = 0;
 					clicks = 0;
